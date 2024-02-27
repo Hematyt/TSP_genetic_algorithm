@@ -51,12 +51,12 @@ def print_population(pop, fitness=None):
 def evaluate_individual(ind, dm):
     m = len(ind)
     fit = 0
-    for i_gene in range(m-1):  # idziemy do przedostatniego genu
+    for i_gene in range(m-1):  # gene m-1
         gene_1 = ind[i_gene]
         gene_2 = ind[i_gene+1]
         fit += dm[gene_1][gene_2]
 
-    # i jeszcze powrót z ostatnigo genu do pierwszego
+    # from the last to the first gene
     gene_1 = ind[-1]
     gene_2 = ind[0]
     fit += dm[gene_1][gene_2]
@@ -76,22 +76,22 @@ def evaluate_population(pop, dm):
 
 def find_best_individual_index(fitness):
     # return fitness.index(min(fitness))
-    index = 0  # indeks najlepszego (przed pracą np. pierwszego osobnika)
-    for i in range(1, len(fitness)):  # przejście przez wszystkie oceny, od drugiego osobnika do końca
-        if fitness[i] < fitness[index]:  # jeśli znaleźliśmy lepszy
+    index = 0  # at the beginning index of the frst element but later index of the best element
+    for i in range(1, len(fitness)):  # all elements verification
+        if fitness[i] < fitness[index]:  # changing for the best (if any)
             index = i
     return index
 
 
 # selection
 def tournament_selection(pop, fitness, k):
-    n = len(pop)  # liczba osobników
+    n = len(pop)  # number of individuals
     new_pop = []
 
-    for _ in range(n):  # Tyle ile jest osobników, tyle mamy turniejów
+    for _ in range(n):  # number of tournaments = number of individuals
         best_ind_index = random.randint(0, n-1)
 
-        for _ in range(k-1):  # losujemy jeszcze k-1 osobników, bo pierwszy jest wylosowany w linii 8
+        for _ in range(k-1):
             random_ind_index = random.randint(0, n-1)
             if fitness[random_ind_index] < fitness[best_ind_index]:
                 best_ind_index = random_ind_index
@@ -120,7 +120,7 @@ def crossover_pmx(parent_1, parent_2):
 
     cut_1 = random.randint(0, m)
     cut_2 = random.randint(cut_1+1, m+1)
-    cut_2 += 1  # bo chcemy dopuścić sytuację, że nie ma suffix
+    cut_2 += 1  # for the situation without suffix
 
     child_1_middle = parent_1[cut_1:cut_2]
     child_2_middle = parent_2[cut_1:cut_2]
@@ -140,7 +140,7 @@ def crossover_pmx(parent_1, parent_2):
 def crossover(pop, pc):
     new_population = []
 
-    for i in range(0, len(pop), 2):  # idziemy przez osobników co dwa, bo krzyżujemy pary
+    for i in range(0, len(pop), 2):  # crossover for pairs, therefore we select 2
         parent_1 = pop[i]
         parent_2 = pop[i+1]
 
