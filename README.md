@@ -5,7 +5,7 @@ the application includes a solution for famous "travelling salesman problem" (TS
 
 There are following files:
 * main.py - algorithm body + parameters
-* definition.py - all required definitions for algorithm
+* functions.py - classes and methods
 
 and folders:
 * input - folder with a few txt files with distances
