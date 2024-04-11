@@ -1,54 +1,65 @@
 # additional files
-import definition as d
+import functions as f
 
 # parameters
-problem = "input/a280.txt"
+problem = "input/pr107.txt"
 num_of_generation = 10000
-m = None   # number of cities
+m = None                    # number of cities
+n = 500                     # number of people in population
+s = 3                       # parameter for selection
+pc = 0.8                    # parameter for crossover
+pm = 0.3                    # parameter for mutation
+# crossover_v = 'pmx'         # options: 'pmx'
+mutation_v = 'inversion'    # options: 'inversion', 'exchange', 'inversion_complex'
 
-n = 150    # number of people in population
-s = 3      # parameter for selection
-pc = 0.7   # parameter for crossover
-pm = 0.2  # parameter for mutation
+# creating instance for distance matrix
+matrix = f.Matrix()
 
-# algorithm body
-distance_matrix = d.distance_matrix(problem)
+# distance matrix calculation
+distance_matrix = matrix.distance(problem)
 m = len(distance_matrix)
 
-pop_P = d.new_population(n, m)
-fitness = d.evaluate_population(pop_P, distance_matrix)
+# creating instances for classes
+crossover = f.Crossover()
+mutation = f.Mutation()
+population = f.Population(m=m, n=n)
+fitness = f.Fitness(distance_matrix)
+selection = f.Selection()
 
-best_index = d.find_best_individual_index(fitness)
-best_ind = (pop_P[best_index][:], fitness[best_index])
+pop_P = population.new_population()
+fit = fitness.evaluate_population(pop_P)
+
+best_index = fitness.find_best_individual_index(fit)
+best_ind = (pop_P[best_index][:], fit[best_index])
 
 print(best_ind[1])
 best_results = [best_ind[1]]
 best_in_pop = [best_ind[1]]
-avg_pop = [sum(fitness)/len(fitness)]
-worst_pop = [max(fitness)]
+avg_pop = [sum(fit)/len(fit)]
+worst_pop = [max(fit)]
 
 for i in range(num_of_generation):
-    pop_T = d.tournament_selection(pop_P, fitness, s)
+    pop_T = selection.tournament(pop_P, fit, s)
 
-    pop_O = d.crossover(pop_T, pc)
+    pop_O = crossover.execute(pop_T, pc)
 
-    d.mutation(pop_O, pm)
+    mutation.execute(pop_O, pm, mutation_v)
 
-    fitness = d.evaluate_population(pop_O, distance_matrix)
+    fit = fitness.evaluate_population(pop_O)
 
-    best_index = d.find_best_individual_index(fitness)
-    if fitness[best_index] < best_ind[1]:
-        best_ind = (pop_O[best_index][:], fitness[best_index])  # spr. czy [:] jest potrzebna
+    best_index = fitness.find_best_individual_index(fit)
+    if fit[best_index] < best_ind[1]:
+        best_ind = (pop_O[best_index][:], fit[best_index])
     best_results.append(best_ind[1])
-    best_in_pop.append(fitness[best_index])
-    avg_pop.append(sum(fitness)/len(fitness))
-    worst_pop.append(max(fitness))
+    best_in_pop.append(fit[best_index])
+    avg_pop.append(sum(fit)/len(fit))
+    worst_pop.append(max(fit))
 
     pop_P = pop_O
 
-    if i % 100 == 0:
+    if i % 1000 == 0:
         print(best_ind[1])
 
 # best result
 print()
-d.print_individual(best_ind[0], best_ind[1])
+population.print_ind(best_ind[0], best_ind[1])
